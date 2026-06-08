@@ -17,10 +17,12 @@ public abstract class Bank {
     }
     abstract void with(double a);
     int l=0;
-    abstract void loan(int a);
+    List<Double> ln=new ArrayList<>();
+    abstract void loan(double a);
     double balance(){
         return balance;
     }
+    abstract void PayLoan(int a);
     void transaction(){
         for (String string : trns) {
             System.out.println(string);
@@ -31,19 +33,39 @@ class currentBank extends Bank{
     currentBank(int pin) {
         super(pin);
     }
-    void loan(int loan){
+    void loan(double loan){
+        ln.add(loan); 
         balance+=loan;l++;
         System.out.println("Loan Amount Added to your balance.");
         trns.add(loan+" Loan Added.");
     }
+    void PayLoan(int lnpay){
+        try{
+            if (balance()>ln.get(lnpay-1)) {
+                balance-=ln.get(lnpay-1);
+                l-=1;
+                trns.add(ln.get(lnpay-1)+" Loan Paid");
+                ln.remove(lnpay-1);
+                System.out.println("Loan paid");
+            }
+            else{
+                System.out.println("insufficient balance.");
+            }
+        }
+         
+        catch(IndexOutOfBoundsException e){
+            System.out.println("Enter correct loan SNo.");
+        }
+    }
     void with(double with){
-       if(balance>1000){
+       if(balance>1000 && balance-with>balance){
             balance-=with;
             System.out.println("Amount withdrawed.");
             trns.add(with+" Amount withdrawed.");
         }
+        
         else{
-            System.out.println("Balance less than 1000");
+            System.out.println("Balance less than 1000 or Negative Balance");
         }
     }
 }
@@ -51,8 +73,9 @@ class saveBank extends Bank{
     saveBank(int pin){
         super(pin);
     }
-    void loan(int loan){
+    void loan(double loan){
         if(loan<500000){
+            ln.add(loan); 
             balance+=loan;l++;
             System.out.println("Loan Amount Added to your balance.");
             trns.add(loan+" Loan Added.");
@@ -61,13 +84,30 @@ class saveBank extends Bank{
             System.out.println("Savings Account not allowed to get loan above 500000");
         }
     }
+    void PayLoan(int lnpay){
+        try{
+            if (balance()>ln.get(lnpay-1)) {
+                balance-=ln.get(lnpay-1);
+                l-=1;
+                trns.add(ln.get(lnpay-1)+" Loan Paid");
+                ln.remove(lnpay-1);
+                System.out.println("Loan paid");
+            }
+            else{
+                System.out.println("insufficient balance.");
+            }
+        }
+        catch(IndexOutOfBoundsException e){
+            System.out.println("Enter correct loan SNo.");
+        }
+    }
     void with(double with){
-        if(balance>500){
+        if(balance>500 && balance-with>balance){
             balance-=with;
             System.out.println("Amount withdrawed.");
         }
         else{
-            System.out.println("Balance less than ₹500");
+            System.out.println("Balance less than ₹500 or Negative Balance");
         }
     }
 }
@@ -232,15 +272,44 @@ class Main{
                             }
                         }
                         else if(choice2==4){
-                            System.out.println("Enter your salary.");
-                            int sal=muf.nextInt();
-                            if (sal>50000 && account.get(pin).balance()>10000) {
-                                System.out.println("Enter loan Amount.");
-                                int loan=muf.nextInt();
-                                account.get(pin).loan(loan);
+                            System.out.println("Enter pin.");
+                            int cpin=muf.nextInt();
+                            if(cpin==pin){
+                                while (true) {
+                                    System.out.println("1.Request Loan.");
+                                    System.out.println("2.Pay Loan.");
+                                    int choice3=muf.nextInt();
+                                    if(choice3==1){
+                                        System.out.println("Enter your salary.");
+                                        int sal=muf.nextInt();
+                                        if (sal>50000 && account.get(pin).balance()>10000) {
+                                            System.out.println("Enter loan Amount.");
+                                            double loan=muf.nextInt();
+                                            account.get(pin).loan(loan);break;
+                                        }
+                                        else {
+                                            System.out.println("No Loan!");break;
+                                        }
+                                    }
+                                    else if (choice3==2) {
+                                       if (account.get(cpin).l>0) {
+                                            int sno=1;
+                                            for (double i : account.get(cpin).ln) {
+                                                System.out.println("Loan No:"+sno+++" Loan Amount:"+i);
+                                            }
+                                            System.out.println("you have "+account.get(cpin).ln.size()+" loans");
+                                            System.out.println("Enter the Loan No you want to pay");
+                                            int lnpay=muf.nextInt();
+                                            account.get(cpin).PayLoan(lnpay);break;
+                                        }
+                                        else{
+                                            System.out.println("You have no loans.");break;
+                                        }
+                                    }
+                                }
                             }
-                            else {
-                                System.out.println("No Loan!");
+                            else{
+                                System.out.println("Enter corret pin");
                             }
                         }
                         else if(choice2==5){
