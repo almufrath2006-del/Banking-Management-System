@@ -449,20 +449,27 @@ class Main{
                     System.out.println("Enter your pin.");
                     int pin=muf.nextInt();
                     if(account.containsKey(pin)){
-                        if(account.get(pin).balance()==0){
-                            System.out.println("Enter your name.");
-                            muf.nextLine();
-                            String name=muf.nextLine();
-                            if(account.get(pin).name.equals(name)){
-                                System.out.println("Your account removed "+account.get(pin).name);
-                                account.remove(pin);break;
+                        System.out.println("Enter your name.");
+                        muf.nextLine();
+                        String name=muf.nextLine();
+                        if(account.get(pin).name.equals(name)){
+                            try {
+                                Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/bank","root","1234");
+                                Statement st=con.createStatement();
+                                int r=st.executeUpdate("delete from saving where pin="+pin+";");
+                                if (r==0) {
+                                    int r1=st.executeUpdate("delete from current where pin="+pin+";");   
+                                }
+                                int r2=st.executeUpdate("delete from loan where pin="+pin+";");
+                                int r3=st.executeUpdate("delete from transaction_details where pin="+pin+";");   
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
-                            else{
-                                System.out.println("Enter correct Name.");
-                            }
+                            System.out.println("Your account removed "+account.get(pin).name);
+                            account.remove(pin);break;
                         }
                         else{
-                            System.out.println("Withdraw total Amount from your Account.");
+                            System.out.println("Enter correct Name.");
                         }
                     }
                     else if(pin==0)break;
