@@ -1,7 +1,8 @@
 This jar file was playing main role in Java Data Base Connectivity.Before trying to Run this program you have to add this jar file into
-java Reference Librery.You can get this jar file in browsers by searching Mysql connecter jar file,then you must me install MySql 
-in your system and user name as default "root" password as "1234".
+java Reference Librery.You can get this jar file in browsers by searching Mysql connecter jar file,then you must be install MySql 
+in your system and user name as default name "root" password as "1234".
 
-Then create a database named bank and add a table named saving with 3 columns pin int primary key, mentioning "primary key" it don't allow duplicates.
-name varchar, balance double. And create another table named current with 3 columns pin int primary key, name varchar and balance int.Then add another table named
-transaction_details and add two column pin int and transaction_details varchar.And finally create another table named loan and add 2 column pin int and loan double.
+Then create a database named bank and add a table named saving with 5 columns pin int primary key, mentioning "primary key" it don't allow duplicates.
+name varchar,phno int, email varchar, balance double. And create another table named current with same 5 columns pin int primary key, name varchar,phno int,
+email varchar and balance int.Then add another table namedtransaction_details and add two column pin int and transaction_details varchar.
+And finally create another table named loan and add 2 column pin int and loan double.

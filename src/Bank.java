@@ -4,12 +4,20 @@ public abstract class Bank {
     int pin;
     protected double balance;
     String name;
+    int phno;
+    String email;
      List<String>trns=new ArrayList<>();
     Bank(int num){
-        pin=num; 
+        this.pin=num; 
     }
     void name(String cusname){
-        name=cusname;
+        this.name=cusname;
+    }
+    void phno(int phno){
+        this.phno=phno;
+    }
+    void email (String email){
+        this.email=email;
     }
     abstract void AddBalance(double balance);
     void dep(double dep,int pin){
@@ -17,13 +25,13 @@ public abstract class Bank {
         System.out.println("Amount deposited.");
         trns.add(dep+" Deposited.");
         try{
-        Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/bank","root","1234");
-        Statement st=con.createStatement();
-        int rs1=st.executeUpdate("update saving set balance=balance+"+dep+" where pin="+pin+";");
-        if (rs1==0) {
-            int rs2=st.executeUpdate("update current set balance=balance+"+dep+" where pin="+pin+";");            
-        }
-        int rs=st.executeUpdate("insert transaction_details value("+pin+",'"+dep+" Amount Deposited');");
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/bank","root","1234");
+            Statement st=con.createStatement();
+            int rs1=st.executeUpdate("update saving set balance=balance+"+dep+" where pin="+pin+";");
+            if (rs1==0) {
+                int rs2=st.executeUpdate("update current set balance=balance+"+dep+" where pin="+pin+";");            
+            }
+            int rs=st.executeUpdate("insert transaction_details value("+pin+",'"+dep+" Amount Deposited');");
         }
         catch(Exception e){
             e.printStackTrace();
@@ -173,13 +181,17 @@ class Main{
             while (rs.next()) {
                 account.put(rs.getInt(1),(new saveBank(rs.getInt(1))));
                 account.get(rs.getInt(1)).name(rs.getString(2));
-                account.get(rs.getInt(1)).AddBalance(rs.getDouble(3));
+                account.get(rs.getInt(1)).phno(rs.getInt(3));
+                account.get(rs.getInt(1)).email(rs.getString(4));
+                account.get(rs.getInt(1)).AddBalance(rs.getDouble(5));
             }
             ResultSet rs1=st.executeQuery("select * from current;");
             while (rs1.next()) {
-                account.put(rs1.getInt(1),(new currentBank(rs1.getInt(1))));
-                account.get(rs1.getInt(1)).name(rs1.getString(2));
-                account.get(rs1.getInt(1)).AddBalance(rs1.getDouble(3));
+                account.put(rs.getInt(1),(new currentBank(rs.getInt(1))));
+                account.get(rs.getInt(1)).name(rs.getString(2));
+                account.get(rs.getInt(1)).phno(rs.getInt(3));
+                account.get(rs.getInt(1)).email(rs.getString(4));
+                account.get(rs.getInt(1)).AddBalance(rs.getDouble(5));   
             }
             ResultSet rs2=st.executeQuery("select * from transaction_details;");
             while (rs2.next()) {
@@ -220,13 +232,19 @@ class Main{
                             System.out.println("Enter your Name: ");
                             muf.nextLine();
                             String name=muf.nextLine();
+                            System.out.println("Enter Phone number");
+                            int phno=muf.nextInt();
+                            muf.nextLine();
+                            System.out.println("Enter E-mail");
+                            String email=muf.nextLine();
                             account.put(pin,(new saveBank(pin)));
                             account.get(pin).name(name);
+                            account.get(pin).phno(phno);
+                            account.get(pin).email(email);
                             try{
                                 Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/bank","root","1234");
                                 Statement st=con.createStatement();
-                                int rs=st.executeUpdate("insert saving value("+pin+",'"+name+"',"+0+");");
-                            }
+                                int rs=st.executeUpdate("insert saving value("+pin+",'"+name+"',"+phno+",'"+email+"',"+0+");");                            }
                             catch(Exception e){
                                 e.printStackTrace();
                             }
@@ -244,12 +262,18 @@ class Main{
                                 System.out.println("Enter your Name: ");
                                 muf.nextLine();
                                 String name=muf.nextLine();
+                                int phno=muf.nextInt();
+                                muf.nextLine();
+                                System.out.println("Enter E-mail");
+                                String email=muf.nextLine();
                                 account.put(pin,(new currentBank(pin)));
                                 account.get(pin).name(name);
+                                account.get(pin).phno(phno);
+                                account.get(pin).email(email);
                                 try{
                                     Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/bank","root","1234");
                                     Statement st=con.createStatement();
-                                    int rs=st.executeUpdate("insert current value("+pin+",'"+name+"',"+0+");");
+                                    int rs=st.executeUpdate("insert current value("+pin+",'"+name+"',"+phno+",'"+email+"',"+0+");");
                                 }
                                 catch(Exception e){
                                     e.printStackTrace();
@@ -278,7 +302,8 @@ class Main{
                             System.out.println("3.Money Transfer.");
                             System.out.println("4.Loan");
                             System.out.println("5.Transaction Historty");
-                            System.out.println("6.Back.");
+                            System.out.println("6.Your Account details");
+                            System.out.println("7.Back.");
                             System.out.print("Enter choice: ");
                             int choice2=muf.nextInt();    
                             if (choice2==1) {
@@ -335,8 +360,8 @@ class Main{
                             }
                             else if(choice2==3){
                                 while (true) {
-                                System.out.println("Enter Pin.");
-                                int cpin=muf.nextInt();
+                                    System.out.println("Enter Pin.");
+                                    int cpin=muf.nextInt();
                                     if (cpin==pin) {
                                         System.out.println("Enter Transfer Account Pin.");
                                         int tpin=muf.nextInt();
@@ -408,7 +433,7 @@ class Main{
                                             }
                                         }
                                         else if (choice3==2) {
-                                        if (account.get(cpin).ln.size()>0) {
+                                            if (account.get(cpin).ln.size()>0) {
                                                 int sno=1;
                                                 for (double i : account.get(cpin).ln) {
                                                     System.out.println("Loan No:"+sno+++" Loan Amount:"+i);
@@ -431,7 +456,20 @@ class Main{
                             else if(choice2==5){
                                 account.get(pin).transaction();
                             }
-                            else if(choice2==6)break;
+                            else if (choice2==6) {
+                                System.out.println("Enter your PIN:");
+                                int cpin=muf.nextInt();
+                                if (cpin==pin) {
+                                    System.out.println("\nName:"+account.get(pin).name);
+                                    System.out.println("PIN:"+account.get(pin).pin);
+                                    System.out.println("Phone No:"+account.get(pin).phno);
+                                    System.out.println("E-Mail:"+account.get(pin).email);
+                                }
+                                else{
+                                    System.out.println("Wrong pin");
+                                }
+                            }
+                            else if(choice2==7)break;
                             else{
                                 System.out.println("Invalid choice.");
                             }
