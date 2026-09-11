@@ -184,11 +184,11 @@ class Main{
             }
             ResultSet rs1=Bank.st.executeQuery("select * from current;");
             while (rs1.next()) {
-                account.put(rs.getInt(1),(new currentBank(rs.getInt(1))));
-                account.get(rs.getInt(1)).name(rs.getString(2));
-                account.get(rs.getInt(1)).phno(rs.getInt(3));
-                account.get(rs.getInt(1)).email(rs.getString(4));
-                account.get(rs.getInt(1)).AddBalance(rs.getDouble(5));   
+                account.put(rs1.getInt(1),(new currentBank(rs1.getInt(1))));
+                account.get(rs1.getInt(1)).name(rs1.getString(2));
+                account.get(rs1.getInt(1)).phno(rs1.getInt(3));
+                account.get(rs1.getInt(1)).email(rs1.getString(4));
+                account.get(rs1.getInt(1)).AddBalance(rs1.getDouble(5));   
             }
             ResultSet rs2=Bank.st.executeQuery("select * from transaction_details;");
             while (rs2.next()) {
@@ -239,11 +239,12 @@ class Main{
                             account.get(pin).phno(phno);
                             account.get(pin).email(email);
                             try{
-                                int rs=Bank.st.executeUpdate("insert saving value("+pin+",'"+name+"',"+phno+",'"+email+"',"+0+");");                            }
+                                int rs=Bank.st.executeUpdate("insert saving value("+pin+",'"+name+"',"+phno+",'"+email+"',"+0+");");
+                                System.out.println("Congrats your Account created " +account.get(pin).name+ " !!");break;
+                      }
                             catch(Exception e){
-                                e.printStackTrace();
+                                System.out.println("This pin already exist.");
                             }
-                            System.out.println("Congrats your Account created " +account.get(pin).name+ " !!");break;
                         }
                     }
                     else if(choice1==2){
@@ -253,7 +254,7 @@ class Main{
                             System.out.println("This pin already exist.");
                         }
                         else{
-                            if(pin>1000||pin<9999){
+                            if(pin>1000 || pin<9999){
                                 System.out.println("Enter your Name: ");
                                 muf.nextLine();
                                 String name=muf.nextLine();
@@ -377,7 +378,7 @@ class Main{
                                                         if (rs2==0) {
                                                             int rs3=Bank.st.executeUpdate("update current set balance=balance+"+tamt+" where pin="+tpin+";");   
                                                         }
-                                                        account.get(tpin).trns.add("Amount "+tamt+" Recived from Account N/O:"+tpin);
+                                                        account.get(tpin).trns.add("Amount "+tamt+" Recived from Account N/O:"+pin);
                                                         int rs3=Bank.st.executeUpdate("insert transaction_details value("+tpin+",'Amount "+tamt+" Recived From Account N/O:"+pin+"');");
                                                         System.out.println("Amount Transfered Succesfully."); 
                                                     }
